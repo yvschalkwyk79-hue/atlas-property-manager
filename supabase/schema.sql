@@ -1,34 +1,5 @@
-﻿CREATE TABLE properties (
-  id SERIAL PRIMARY KEY,
-  address TEXT,
-  asking_price NUMERIC,
-  offer_amount NUMERIC,
-  status TEXT DEFAULT 'new',
-  seller_id INT,
-  buyer_id INT,
-  finder_fee NUMERIC,
-  fee_status TEXT DEFAULT 'pending',
-  payment_method TEXT,
-  transaction_id TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE sellers (
-  id SERIAL PRIMARY KEY,
-  name TEXT,
-  email TEXT,
-  phone TEXT,
-  nda_signed BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE buyers (
-  id SERIAL PRIMARY KEY,
-  name TEXT,
-  email TEXT,
-  phone TEXT,
-  nda_signed BOOLEAN DEFAULT FALSE,
-  fee_acknowledged BOOLEAN DEFAULT FALSE,
-  bid_amount NUMERIC,
-  created_at TIMESTAMP DEFAULT NOW()
-);
+﻿create table sellers (id uuid primary key default gen_random_uuid(), name text, email text, phone text);
+create table buyers (id uuid primary key default gen_random_uuid(), name text, email text, phone text);
+create table properties (id uuid primary key default gen_random_uuid(), address text, price numeric, status text, seller_id uuid references sellers(id));
+create table deals (id uuid primary key default gen_random_uuid(), property_id uuid references properties(id), buyer_id uuid references buyers(id), status text, finder_fee numeric);
+create table conversations (id uuid primary key default gen_random_uuid(), property_id uuid references properties(id), participant_id uuid, participant_type text, message text, created_at timestamp default now());

@@ -1,11 +1,13 @@
-﻿CREATE OR REPLACE FUNCTION handle_new_property()
-RETURNS trigger AS \$\$
-BEGIN
-  PERFORM start_ai_seller_outreach(NEW.id);
-  RETURN NEW;
-END;
-\$\$ LANGUAGE plpgsql;
+﻿create function update_deal_status() returns trigger as \$\$
+begin
+  if new.status = 'closed' then
+    update deals set status='closed' where property_id=new.id;
+  end if;
+  return new;
+end;
+\$\$ language plpgsql;
 
-CREATE TRIGGER new_property_trigger
-AFTER INSERT ON properties
-FOR EACH ROW EXECUTE FUNCTION handle_new_property();
+create trigger trigger_update_deal
+after update on properties
+for each row
+execute procedure update_deal_status();
